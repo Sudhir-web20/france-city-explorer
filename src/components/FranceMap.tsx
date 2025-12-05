@@ -114,14 +114,15 @@ const FranceMap = ({ onCitySelect, selectedCity }: FranceMapProps) => {
   return (
     <div 
       ref={containerRef} 
-      className="relative w-full h-full overflow-hidden"
-      style={{ backgroundColor: 'hsl(210, 40%, 91%)' }}
+      className="relative w-full h-full overflow-hidden flex items-center justify-center p-4 md:p-8"
       onMouseMove={handleMouseMove}
     >
+      {/* Glassmorphism container */}
+      <div className="absolute inset-4 md:inset-8 bg-white/30 backdrop-blur-xl rounded-2xl border border-white/40 shadow-2xl"></div>
       <svg
-        width={dimensions.width}
-        height={dimensions.height}
-        className="block"
+        width={dimensions.width - 64}
+        height={dimensions.height - 64}
+        className="relative z-10"
         viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
       >
         {/* Ocean background gradient */}
