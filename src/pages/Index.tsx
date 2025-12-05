@@ -26,7 +26,12 @@ const Index = () => {
         />
       </Helmet>
       
-      <div className="min-h-screen flex flex-col bg-background">
+      <div 
+        className="min-h-screen flex flex-col"
+        style={{
+          background: 'linear-gradient(90deg, hsl(217, 89%, 61%) 0%, hsl(217, 89%, 61%) 30%, hsl(0, 0%, 100%) 30%, hsl(0, 0%, 100%) 70%, hsl(0, 72%, 63%) 70%, hsl(0, 72%, 63%) 100%)'
+        }}
+      >
         <Header />
         
         <main className="flex-1 pt-16 relative">

@@ -6,8 +6,18 @@
 
 @layer base {
   :root {
-    --background: 40 30% 96%;
+    --background: 0 0% 100%;
     --foreground: 220 40% 13%;
+
+    /* French flag colors */
+    --flag-blue: 217 89% 61%;
+    --flag-white: 0 0% 100%;
+    --flag-red: 0 72% 63%;
+
+    /* Glassmorphism */
+    --glass-bg: 0 0% 100% / 0.3;
+    --glass-border: 0 0% 100% / 0.4;
+    --glass-blur: 12px;
 
     --card: 40 25% 98%;
     --card-foreground: 220 40% 13%;
