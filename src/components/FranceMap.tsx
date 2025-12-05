@@ -66,13 +66,13 @@ const FranceMap = ({ onCitySelect, selectedCity }: FranceMapProps) => {
     return () => window.removeEventListener("resize", updateDimensions);
   }, []);
 
-  // Create projection centered on France (adjusted to account for Corsica)
+  // Create projection centered on France
   const getProjection = useCallback(() => {
     if (!geoData) return null;
     
     const projection = geoMercator()
-      .center([3.0, 46.2]) // Slightly east to account for Corsica
-      .scale(Math.min(dimensions.width, dimensions.height) * 3.2)
+      .center([2.5, 46.5])
+      .scale(Math.min(dimensions.width, dimensions.height) * 3.5)
       .translate([dimensions.width / 2, dimensions.height / 2]);
     
     return projection;
@@ -92,8 +92,8 @@ const FranceMap = ({ onCitySelect, selectedCity }: FranceMapProps) => {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-full bg-map-ocean">
-        <div className="text-center p-8 bg-card rounded-lg shadow-elevated">
+      <div className="flex items-center justify-center h-full">
+        <div className="text-center p-8 bg-white/80 backdrop-blur-sm rounded-lg shadow-lg">
           <p className="text-destructive font-medium">{error}</p>
         </div>
       </div>
@@ -102,10 +102,10 @@ const FranceMap = ({ onCitySelect, selectedCity }: FranceMapProps) => {
 
   if (!geoData || !pathGenerator) {
     return (
-      <div className="flex items-center justify-center h-full bg-map-ocean">
+      <div className="flex items-center justify-center h-full">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading map of France...</p>
+          <p className="text-white/80">Loading map of France...</p>
         </div>
       </div>
     );
@@ -114,34 +114,15 @@ const FranceMap = ({ onCitySelect, selectedCity }: FranceMapProps) => {
   return (
     <div 
       ref={containerRef} 
-      className="relative w-full h-full overflow-hidden flex items-center justify-center p-4 md:p-8"
+      className="relative w-full h-full overflow-hidden flex items-center justify-center"
       onMouseMove={handleMouseMove}
     >
-      {/* Glassmorphism container */}
-      <div className="absolute inset-4 md:inset-8 bg-white/30 backdrop-blur-xl rounded-2xl border border-white/40 shadow-2xl"></div>
       <svg
-        width={dimensions.width - 64}
-        height={dimensions.height - 64}
-        className="relative z-10"
+        width={dimensions.width}
+        height={dimensions.height}
+        className="block"
         viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
       >
-        {/* Ocean background gradient */}
-        <defs>
-          <radialGradient id="oceanGradient" cx="50%" cy="50%" r="70%">
-            <stop offset="0%" stopColor="hsl(210, 45%, 94%)" />
-            <stop offset="100%" stopColor="hsl(210, 40%, 88%)" />
-          </radialGradient>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-            <feMerge>
-              <feMergeNode in="coloredBlur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-        </defs>
-        
-        <rect width="100%" height="100%" fill="url(#oceanGradient)" />
-        
         <g>
           {geoData.features.map((feature, index) => {
             const departmentName = feature.properties.nom;
@@ -157,14 +138,13 @@ const FranceMap = ({ onCitySelect, selectedCity }: FranceMapProps) => {
                 className="cursor-pointer map-transition"
                 fill={
                   isSelected
-                    ? "hsl(var(--map-region-selected))"
+                    ? "rgba(59, 130, 246, 0.4)"
                     : isHovered
-                    ? "hsl(var(--map-region-hover))"
-                    : "hsl(var(--map-region))"
+                    ? "rgba(255, 255, 255, 0.5)"
+                    : "rgba(255, 255, 255, 0.25)"
                 }
-                stroke="hsl(var(--map-border))"
-                strokeWidth={isSelected || isHovered ? 2 : 0.5}
-                filter={isSelected ? "url(#glow)" : undefined}
+                stroke="rgba(255, 255, 255, 0.8)"
+                strokeWidth={isSelected || isHovered ? 1.5 : 1}
                 onMouseEnter={() => setHoveredDepartment(departmentName)}
                 onMouseLeave={() => setHoveredDepartment(null)}
                 onClick={() => handleRegionClick(departmentName)}
@@ -174,10 +154,24 @@ const FranceMap = ({ onCitySelect, selectedCity }: FranceMapProps) => {
         </g>
       </svg>
 
+      {/* Paris marker */}
+      <div 
+        className="absolute z-20 pointer-events-none"
+        style={{
+          left: '50%',
+          top: '35%',
+          transform: 'translate(-50%, -50%)'
+        }}
+      >
+        <div className="w-6 h-6 rounded-full border-2 border-primary bg-white/80 flex items-center justify-center">
+          <div className="w-2 h-2 rounded-full bg-primary"></div>
+        </div>
+      </div>
+
       {/* Tooltip */}
       {hoveredDepartment && (
         <div
-          className="fixed pointer-events-none z-50 px-3 py-2 bg-card/95 backdrop-blur-sm rounded-lg shadow-elevated border border-border animate-fade-in"
+          className="fixed pointer-events-none z-50 px-3 py-2 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg border border-white/50 animate-fade-in"
           style={{
             left: tooltipPos.x + 15,
             top: tooltipPos.y - 10,

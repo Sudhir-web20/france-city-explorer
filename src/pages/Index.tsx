@@ -29,13 +29,13 @@ const Index = () => {
       <div 
         className="min-h-screen flex flex-col"
         style={{
-          background: 'linear-gradient(90deg, hsl(217, 89%, 61%) 0%, hsl(217, 89%, 61%) 30%, hsl(0, 0%, 100%) 30%, hsl(0, 0%, 100%) 70%, hsl(0, 72%, 63%) 70%, hsl(0, 72%, 63%) 100%)'
+          background: 'linear-gradient(90deg, #5B8DEF 0%, #8BB0F4 25%, #FFFFFF 50%, #F4A0A0 75%, #EF5B5B 100%)'
         }}
       >
         <Header />
         
-        <main className="flex-1 pt-16 relative">
-          <div className="h-[calc(100vh-4rem)] w-full">
+        <main className="flex-1 relative">
+          <div className="h-screen w-full">
             <FranceMap 
               onCitySelect={handleCitySelect}
               selectedCity={selectedCity?.name || null}
