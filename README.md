@@ -1,73 +1,75 @@
-# Welcome to your Lovable project
+# 🇫🇷 Interactive France Map
 
-## Project info
+An elegant, interactive map of France showcasing all departments and their capital cities. Built with React, TypeScript, and D3.js.
 
-**URL**: https://lovable.dev/projects/6f65e660-f3af-481f-ae04-557f4e9cc2e8
+![France Map Preview](https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/departements.geojson)
 
-## How can I edit this code?
+## ✨ Features
 
-There are several ways of editing your application.
+- **Interactive Map**: Click on any department to learn about its capital city
+- **Hover Effects**: Smooth hover animations with department highlighting
+- **City Information Panel**: Detailed info including population, region, and highlights
+- **French Tricolor Design**: Beautiful gradient background representing the French flag
+- **Responsive Layout**: Works seamlessly on desktop and mobile devices
+- **Auto-scaling**: Map automatically fits the viewport using D3's fitExtent
 
-**Use Lovable**
+## 🛠️ Tech Stack
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/6f65e660-f3af-481f-ae04-557f4e9cc2e8) and start prompting.
+- **React 18** - UI framework
+- **TypeScript** - Type safety
+- **Vite** - Build tool
+- **Tailwind CSS** - Styling
+- **D3.js** - Map rendering and geo projections
+- **shadcn/ui** - UI components
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🚀 Getting Started
 
-**Use your preferred IDE**
+### Prerequisites
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- Node.js (v18 or higher)
+- npm or yarn
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Installation
 
-Follow these steps:
+```bash
+# Clone the repository
+git clone <your-repo-url>
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# Navigate to project directory
+cd france-map
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Install dependencies
+npm install
 
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The app will be available at `http://localhost:5173`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 📁 Project Structure
 
-**Use GitHub Codespaces**
+```
+src/
+├── components/
+│   ├── FranceMap.tsx    # Main interactive map component
+│   ├── Header.tsx       # Search header with logo
+│   └── InfoPanel.tsx    # City information display
+├── data/
+│   └── cityData.ts      # Department-to-city mapping and city info
+├── pages/
+│   └── Index.tsx        # Main page layout
+└── index.css            # Global styles and CSS variables
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 🗺️ Data Source
 
-## What technologies are used for this project?
+Map data sourced from [france-geojson](https://github.com/gregoiredavid/france-geojson) - a reliable GeoJSON dataset of French administrative boundaries.
 
-This project is built with:
+## 📝 License
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+MIT License - feel free to use this project for your own purposes.
 
-## How can I deploy this project?
+## 🤝 Contributing
 
-Simply open [Lovable](https://lovable.dev/projects/6f65e660-f3af-481f-ae04-557f4e9cc2e8) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Contributions are welcome! Feel free to open issues or submit pull requests.
