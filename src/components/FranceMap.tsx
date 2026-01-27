@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { geoPath, geoMercator } from "d3-geo";
 import { DEPARTMENT_TO_CITY, getCityInfo, CityInfo } from "@/data/cityData";
+import { Button } from "@/components/ui/button";
+import { ZoomIn, ZoomOut, RotateCcw, Move } from "lucide-react";
 
 const GEO_URL = "https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/departements.geojson";
 
@@ -33,6 +35,16 @@ const FranceMap = ({ onCitySelect, selectedCity }: FranceMapProps) => {
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
   const [error, setError] = useState<string | null>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
+  
+  // Zoom and pan state
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [isPanning, setIsPanning] = useState(false);
+  const [panStart, setPanStart] = useState({ x: 0, y: 0 });
+
+  const MIN_ZOOM = 0.5;
+  const MAX_ZOOM = 4;
+  const ZOOM_STEP = 0.3;
 
   // Fetch GeoJSON data
   useEffect(() => {
@@ -80,6 +92,48 @@ const FranceMap = ({ onCitySelect, selectedCity }: FranceMapProps) => {
 
   const handleMouseMove = (e: React.MouseEvent) => {
     setTooltipPos({ x: e.clientX, y: e.clientY });
+    
+    if (isPanning) {
+      const dx = e.clientX - panStart.x;
+      const dy = e.clientY - panStart.y;
+      setPan(prev => ({ x: prev.x + dx, y: prev.y + dy }));
+      setPanStart({ x: e.clientX, y: e.clientY });
+    }
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (e.button === 0) {
+      setIsPanning(true);
+      setPanStart({ x: e.clientX, y: e.clientY });
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsPanning(false);
+  };
+
+  const handleMouseLeave = () => {
+    setIsPanning(false);
+    setHoveredDepartment(null);
+  };
+
+  const handleWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP;
+    setZoom(prev => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, prev + delta)));
+  };
+
+  const handleZoomIn = () => {
+    setZoom(prev => Math.min(MAX_ZOOM, prev + ZOOM_STEP));
+  };
+
+  const handleZoomOut = () => {
+    setZoom(prev => Math.max(MIN_ZOOM, prev - ZOOM_STEP));
+  };
+
+  const handleReset = () => {
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
   };
 
   const handleRegionClick = (departmentName: string) => {
@@ -116,14 +170,63 @@ const FranceMap = ({ onCitySelect, selectedCity }: FranceMapProps) => {
       ref={containerRef} 
       className="relative w-full h-full overflow-hidden flex items-center justify-center"
       onMouseMove={handleMouseMove}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseLeave}
+      onWheel={handleWheel}
+      style={{ cursor: isPanning ? 'grabbing' : 'grab' }}
     >
+      {/* Zoom Controls */}
+      <div className="absolute left-4 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-2">
+        <Button
+          variant="secondary"
+          size="icon"
+          onClick={handleZoomIn}
+          className="bg-white/90 hover:bg-white shadow-lg backdrop-blur-sm"
+          title="Zoom in"
+        >
+          <ZoomIn className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="secondary"
+          size="icon"
+          onClick={handleZoomOut}
+          className="bg-white/90 hover:bg-white shadow-lg backdrop-blur-sm"
+          title="Zoom out"
+        >
+          <ZoomOut className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="secondary"
+          size="icon"
+          onClick={handleReset}
+          className="bg-white/90 hover:bg-white shadow-lg backdrop-blur-sm"
+          title="Reset view"
+        >
+          <RotateCcw className="h-4 w-4" />
+        </Button>
+      </div>
+
+      {/* Zoom indicator */}
+      <div className="absolute left-4 bottom-4 z-30 px-3 py-1.5 bg-white/90 backdrop-blur-sm rounded-full shadow-lg text-sm font-medium text-foreground">
+        {Math.round(zoom * 100)}%
+      </div>
+
+      {/* Pan hint */}
+      <div className="absolute right-4 bottom-4 z-30 flex items-center gap-2 px-3 py-1.5 bg-white/90 backdrop-blur-sm rounded-full shadow-lg text-sm text-muted-foreground">
+        <Move className="h-3 w-3" />
+        <span>Drag to pan</span>
+      </div>
+
       <svg
         width={dimensions.width}
         height={dimensions.height}
         className="block"
         viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
       >
-        <g>
+        <g 
+          transform={`translate(${pan.x + dimensions.width / 2}, ${pan.y + dimensions.height / 2}) scale(${zoom}) translate(${-dimensions.width / 2}, ${-dimensions.height / 2})`}
+        >
           {geoData.features.map((feature, index) => {
             const departmentName = feature.properties.nom;
             const cityName = DEPARTMENT_TO_CITY[departmentName] || departmentName;
@@ -144,32 +247,22 @@ const FranceMap = ({ onCitySelect, selectedCity }: FranceMapProps) => {
                     : "rgba(255, 255, 255, 0.25)"
                 }
                 stroke="rgba(255, 255, 255, 0.8)"
-                strokeWidth={isSelected || isHovered ? 1.5 : 1}
+                strokeWidth={(isSelected || isHovered ? 1.5 : 1) / zoom}
                 onMouseEnter={() => setHoveredDepartment(departmentName)}
                 onMouseLeave={() => setHoveredDepartment(null)}
-                onClick={() => handleRegionClick(departmentName)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleRegionClick(departmentName);
+                }}
+                style={{ cursor: 'pointer' }}
               />
             );
           })}
         </g>
       </svg>
 
-      {/* Paris marker */}
-      <div 
-        className="absolute z-20 pointer-events-none"
-        style={{
-          left: '50%',
-          top: '35%',
-          transform: 'translate(-50%, -50%)'
-        }}
-      >
-        <div className="w-6 h-6 rounded-full border-2 border-primary bg-white/80 flex items-center justify-center">
-          <div className="w-2 h-2 rounded-full bg-primary"></div>
-        </div>
-      </div>
-
       {/* Tooltip */}
-      {hoveredDepartment && (
+      {hoveredDepartment && !isPanning && (
         <div
           className="fixed pointer-events-none z-50 px-3 py-2 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg border border-white/50 animate-fade-in"
           style={{
