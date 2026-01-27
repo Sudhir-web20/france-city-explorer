@@ -212,10 +212,44 @@ const FranceMap = ({ onCitySelect, selectedCity }: FranceMapProps) => {
         {Math.round(zoom * 100)}%
       </div>
 
-      {/* Pan hint */}
-      <div className="absolute right-4 bottom-4 z-30 flex items-center gap-2 px-3 py-1.5 bg-white/90 backdrop-blur-sm rounded-full shadow-lg text-sm text-muted-foreground">
-        <Move className="h-3 w-3" />
-        <span>Drag to pan</span>
+      {/* Minimap */}
+      <div className="absolute right-4 bottom-4 z-30 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg border border-white/50 overflow-hidden">
+        <div className="px-2 py-1 border-b border-border/30 text-xs font-medium text-muted-foreground">
+          Overview
+        </div>
+        <svg
+          width={120}
+          height={90}
+          className="block"
+          viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
+        >
+          {/* Mini map paths */}
+          <g>
+            {geoData.features.map((feature, index) => {
+              const path = pathGenerator(feature as any);
+              return (
+                <path
+                  key={`mini-${feature.properties.code}-${index}`}
+                  d={path || ""}
+                  fill="rgba(100, 116, 139, 0.3)"
+                  stroke="rgba(100, 116, 139, 0.5)"
+                  strokeWidth={1}
+                />
+              );
+            })}
+          </g>
+          {/* Viewport indicator */}
+          <rect
+            x={dimensions.width / 2 - (dimensions.width / 2) / zoom - pan.x / zoom}
+            y={dimensions.height / 2 - (dimensions.height / 2) / zoom - pan.y / zoom}
+            width={dimensions.width / zoom}
+            height={dimensions.height / zoom}
+            fill="rgba(59, 130, 246, 0.2)"
+            stroke="rgba(59, 130, 246, 0.8)"
+            strokeWidth={2}
+            rx={2}
+          />
+        </svg>
       </div>
 
       <svg
