@@ -275,13 +275,13 @@ const FranceMap = ({ onCitySelect, selectedCity }: FranceMapProps) => {
                 className="cursor-pointer map-transition"
                 fill={
                   isSelected
-                    ? "rgba(59, 130, 246, 0.4)"
+                    ? "rgba(30, 64, 175, 0.7)"
                     : isHovered
-                    ? "rgba(255, 255, 255, 0.5)"
-                    : "rgba(255, 255, 255, 0.25)"
+                    ? "rgba(55, 65, 81, 0.6)"
+                    : "rgba(31, 41, 55, 0.5)"
                 }
-                stroke="rgba(255, 255, 255, 0.8)"
-                strokeWidth={(isSelected || isHovered ? 1.5 : 1) / zoom}
+                stroke="rgba(255, 255, 255, 1)"
+                strokeWidth={(isSelected || isHovered ? 2.5 : 1.5) / zoom}
                 onMouseEnter={() => setHoveredDepartment(departmentName)}
                 onMouseLeave={() => setHoveredDepartment(null)}
                 onClick={(e) => {
